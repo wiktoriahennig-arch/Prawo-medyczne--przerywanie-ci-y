@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Wiedzy: Przerywanie Ciąży - Ujęcie Prawne</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-teal-600 to-cyan-700 text-white shadow-md py-6 px-4 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Prawo Medyczne – Wykład 4 ⚖️</h1>
+                <p class="text-teal-100 text-sm mt-1">Uwarunkowania dopuszczalności aborcji, orzecznictwo i procedury (52 pytania)</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur-md rounded-lg p-3 text-center border border-white/20 min-w-[180px]">
+                <div class="text-xs uppercase tracking-wider text-teal-200 font-semibold">Twój wynik</div>
+                <div class="text-2xl font-black mt-1" id="score-display">0 / 52</div>
+                <div class="text-[10px] text-teal-100 mt-1" id="percent-display">Postęp: 0%</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-8">
+        
+        <!-- Controls -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-8 flex flex-wrap gap-4 items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="inline-flex h-3.5 w-3.5 rounded-full bg-teal-500 animate-pulse"></span>
+                <span class="text-sm font-medium text-slate-600" id="stats-counter">Rozwiązano: 0 z 52 pytań</span>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="resetTest()" class="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-lg transition-colors">
+                    Resetuj test
+                </button>
+                <button onclick="showAllCorrectAnswers()" class="px-4 py-2 text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors">
+                    Pokaż odpowiedzi
+                </button>
+            </div>
+        </div>
+
+        <!-- Questions Container -->
+        <div id="questions-container" class="space-y-6">
+            <!-- Questions injected via JS -->
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 text-center py-4 mt-12 border-t border-slate-800 text-xs">
+        <p>Aplikacja treningowa – Ustawa o planowaniu rodziny, ochronie płodu ludzkiego i warunkach dopuszczalności przerywania ciąży.</p>
+    </footer>
+
+    <script>
+        const quizData = [
+            {
+                id: 1,
+                question: "Ustawa o planowaniu rodziny i ochronie płodu ludzkiego pochodzi z roku:",
+                correct: "1993",
+                options: ["1989", "1993", "2005"],
+                explanations: {
+                    "1989": "Błąd! To rok transformacji ustrojowej, ustawa aborcyjna powstała później.",
+                    "1993": "Prawidłowo! Pełna data to ustawa z dnia 7 stycznia 1993 r.",
+                    "2005": "Błąd! W 2005 r. uchwalono m.in. ustawę transplantacyjną."
+                }
+            },
+            {
+                id: 2,
+                question: "Obowiązek ochrony ludzkiego życia w fazie prenatalnej na gruncie polskiej ustawy:",
+                correct: "nie jest obowiązkiem bezwzględnym",
+                options: ["ma charakter absolutny i bezwzględny", "nie jest obowiązkiem bezwzględnym", "zależy od zgody prokuratora"],
+                explanations: {
+                    "ma charakter absolutny i bezwzględny": "Błąd! Ochrona ta jest realizowana 'w granicach ustawy', co oznacza istnienie legalnych wyjątków.",
+                    "nie jest obowiązkiem bezwzględnym": "Prawidłowo! Ustawa przewiduje legalne przesłanki dopuszczające przerwanie ciąży, więc ochrona nie jest bezwzględna.",
+                    "zależy od zgody prokuratora": "Błąd! Prokurator stwierdza tylko jedną z przesłankek (kryminalną), a nie decyduje o istocie ochrony życia."
+                }
+            },
+            {
+                id: 3,
+                question: "Zabieg aborcji w doktrynie zaliczany jest do zabiegów o charakterze:",
+                correct: "nieterapeutycznym (w ujęciu ogólnym)",
+                options: ["czysto rehabilitacyjnym", "nieterapeutycznym (w ujęciu ogólnym)", "zawsze profilaktycznym"],
+                explanations: {
+                    "czysto rehabilitacyjnym": "Błąd! Kompletnie sprzeczne z istotą zabiegu.",
+                    "nieterapeutycznym (w ujęciu ogólnym)": "Prawidłowo! Definiuje się go jako zabieg w celu innym niż leczniczy, choć w przypadku ochrony zdrowia matki ma charakter mieszany.",
+                    "zawsze profilaktycznym": "Błąd! Profilaktyka służy zapobieganiu chorobom, a nie przerywaniu ciąży."
+                }
+            },
+            {
+                id: 4,
+                question: "Istotą zabiegu aborcji jest przerwanie naturalnego procesu rozwoju dziecka poczętego, skutkujące:",
+                correct: "zazwyczaj jego śmiercią",
+                options: ["zawsze pełnym wyzdrowieniem płodu", "zazwyczaj jego śmiercią", "wyłącznie zmianą statusu cywilnego matki"],
+                explanations: {
+                    "zawsze pełnym wyzdrowieniem płodu": "Błąd! Medyczny skutek zabiegu aborcji unicestwia proces rozwojowy płodu.",
+                    "zazwyczaj jego śmiercią": "Prawidłowo! Taki jest bezpośredni i naturalny skutek zatrzymania rozwoju prenatalnego dziecka w łonie matki.",
+                    "wyłącznie zmianą statusu cywilnego matki": "Błąd! Status cywilny to pojęcie z zakresu prawa małżeńskiego i osobowego (np. panna, mężatka)."
+                }
+            },
+            {
+                id: 5,
+                question: "Zakaz dokonywania aborcji wynika wprost z konstrukcji ustawy, która zawęża dopuszczalność do:",
+                correct: "wybranych okoliczności (model wskazaniowy)",
+                options: ["określonego terminu bez względu na przyczyny", "wybranych okoliczności (model wskazaniowy)", "wyłącznej zgody ojca dziecka"],
+                explanations: {
+                    "określonego terminu bez względu na przyczyny": "Błąd! To cecha modelu terminowego (tzw. aborcja na żądanie do danego tygodnia), który w Polsce nie obowiązuje.",
+                    "wybranych okoliczności (model wskazaniowy)": "Prawidłowo! Legalność aborcji w Polsce opiera się na tzw. modelu wskazaniowym (indykacyjnym) — zabieg jest dopuszczalny tylko przy zaistnieniu konkretnych przesłanek.",
+                    "wyłącznej zgody ojca dziecka": "Błąd! Zgoda ojca nie stanowi przesłanki legalizującej zabieg."
+                }
+            },
+            {
+                id: 6,
+                question: "Zgodnie z orzecznictwem ETPCz, z artykułu drugiego EKPCz (prawo do życia):",
+                correct: "nie można wywodzić prawa do aborcji, ani zakazu aborcji",
+                options: ["wynika bezwzględne prawo do aborcji na żądanie", "wynika absolutny zakaz aborcji w każdym kraju", "nie można wywodzić prawa do aborcji, ani zakazu aborcji"],
+                explanations: {
+                    "wynika bezwzględne prawo do aborcji na żądanie": "Błąd! Trybunał odrzuca taką interpretację art. 2.",
+                    "wynika absolutny zakaz aborcji w każdym kraju": "Błąd! ETPCz wskazuje na brak konsensusu i pozostawia margines oceny państwom.",
+                    "nie można wywodzić prawa do aborcji, ani zakazu aborcji": "Prawidłowo! Trybunał stosuje podejście ostrożnościowe — art. 2 nie nakazuje ani nie zakazuje państwom dopuszczalności aborcji."
+                }
+            },
+            {
+                id: 7,
+                question: "Odmowa dostępu do legalnej aborcji z przyczyn zdrowotnych wchodzi w zakres naruszenia (sprawa A, B i C v. Irlandia):",
+                correct: "prawa do poszanowania życia prywatnego (art. 8 EKPCz)",
+                options: ["prawa do wolności słowa", "prawa do poszanowania życia prywatnego (art. 8 EKPCz)", "zakazu dyskryminacji rasowej"],
+                explanations: {
+                    "prawa do wolności słowa": "Błąd! Brak jakiegokolwiek związku z wolnością wypowiedzi.",
+                    "prawa do poszanowania życia prywatnego (art. 8 EKPCz)": "Prawidłowo! ETPCz orzekł, że regulowanie i ograniczanie dostępu do aborcji zdrowotnej dotyka bezpośrednio sfery życia prywatnego kobiety.",
+                    "zakazu dyskryminacji rasowej": "Błąd! Sprawa dotyczy autonomii osobistej i zdrowia, nie rasy."
+                }
+            },
+            {
+                id: 8,
+                question: "Wyrok ETPCz w sprawie R.R. v. Polska nakłada na państwo obowiązek stworzenia:",
+                correct: "ram proceduralnych gwarantujących kobiecie efektywny i rzeczywisty dostęp do legalnej aborcji",
+                options: ["specjalnej policji medycznej kontrolującej szpitale", "ram proceduralnych gwarantujących kobiecie efektywny i rzeczywisty dostęp do legalnej aborcji", "całkowitego zakazu badań prenatalnych"],
+                explanations: {
+                    "specjalnej policji medycznej...": "Błąd! Chodzi o procedury medyczno-prawne, a nie organy ścigania.",
+                    "ram proceduralnych gwarantujących kobiecie efektywny i rzeczywisty dostęp do legalnej aborcji": "Prawidłowo! Jeżeli prawo krajowe przewiduje legalną aborcję, państwo musi zapewnić, by pacjentka mogła z niej realnie i bez zwłoki skorzystać.",
+                    "całkowitego zakazu badań prenatalnych": "Błąd! Sprawa R.R. dotyczyła właśnie braku terminowego dostępu do badań prenatalnych."
+                }
+            },
+            {
+                id: 9,
+                question: "Zgodnie z wyrokiem polskiego Trybunału Konstytucyjnego z 1997 roku (K 26/96):",
+                correct: "życie ludzkie od momentu powstania stanowi wartość chronioną konstytucyjnie",
+                options: ["płód staje się człowiekiem dopiero w momencie porodu", "życie ludzkie od momentu powstania stanowi wartość chronioną konstytucyjnie", "ochrona prawna życia w każdej fazie musi być identyczna"],
+                explanations: {
+                    "płód staje się człowiekiem...": "Błąd! TK uznał podmiotowość konstytucyjną życia w fazie prenatalnej.",
+                    "życie ludzkie od momentu powstania stanowi wartość chronioną konstytucyjnie": "Prawidłowo! TK orzekł, że życie od poczęcia jest wartością konstytucyjną podlegającą ochronie prawnej.",
+                    "ochrona prawna życia w każdej fazie musi być identyczna": "Błąd! TK wprost stwierdził, że intensywność i rodzaj ochrony prawnej nie musi być w każdej fazie życia taka sama."
+                }
+            },
+            {
+                id: 10,
+                question: "Przesłanka aborcyjna oparta na dużym prawdopodobieństwie ciężkiego upośledzenia płodu (tzw. eugeniczna) jest obecnie w Polsce:",
+                correct: "nieaktualna",
+                options: ["w pełni legalna i powszechnie stosowana", "nieaktualna", "wymaga wyłącznie zgody sądu rodzinnego"],
+                explanations: {
+                    "w pełni legalna...": "Błąd! Została uznana za niezgodną z Konstytucją przez wyrok TK.",
+                    "nieaktualna": "Prawidłowo! Wykład wprost oznacza tę przesłankę jako 'NIEAKTUALNE' w świetle prawa polskiego.",
+                    "wymaga wyłącznie zgody sądu rodzinnego": "Błąd! Przesłanka ta została usunięta z porządku prawnego."
+                }
+            },
+            {
+                id: 11,
+                question: "Przerwanie ciąży z przesłanki zagrożenia życia lub zdrowia kobiety jest przypadkiem:",
+                correct: "stanu wyższej konieczności (art. 26 KK)",
+                options: ["obrony koniecznej", "stanu wyższej konieczności (art. 26 KK)", " błędu medycznego negatywnego"],
+                explanations: {
+                    "obrony koniecznej": "Błąd! Obrona konieczna dotyczy odparcia bezprawnego zamachu człowieka, a ciąża nie jest bezprawnym zamachem płodu.",
+                    "stanu wyższej konieczności (art. 26 KK)": "Prawidłowo! Mamy do czynienia z kolizją dwóch dóbr (życie/zdrowie matki vs życie płodu), gdzie ratuje się dobro równe lub wyższe.",
+                    "błędu medycznego negatywnego": "Błąd! To przesłanka legalności zabiegu, a nie błąd personelu."
+                }
+            },
+            {
+                id: 12,
+                question: "Aby legalnie przerwać ciążę z przesłanki zdrowotnej, niebezpieczeństwo dla kobiety:",
+                correct: "musi być bezpośrednie lub na tyle poważne, że zwłoka uniemożliwi ratunek",
+                options: ["musi mieć charakter wyłącznie przejściowego bólu głowy", "musi być bezpośrednie lub na tyle poważne, że zwłoka uniemożliwi ratunek", "musi wystąpić przed 6. tygodniem ciąży"],
+                explanations: {
+                    "musi mieć charakter wyłącznie...": "Błąd! Zagrożenie musi dotyczyć życia lub zdrowia w stopniu istotnym.",
+                    "musi być bezpośrednie lub na tyle poważne, że zwłoka uniemożliwi ratunek": "Prawidłowo! Wykład precyzuje warunki zagrożenia bezpośredniego oraz poważnego, wykluczającego zwłokę.",
+                    "musi wystąpić przed 6. tygodniem ciąży": "Błąd! Przesłanka zdrowotna nie ma ustawowo określonego limitu tygodniowego."
+                }
+            },
+            {
+                id: 13,
+                question: "Zabieg przerywania ciąży z przesłanki zdrowotnej dopuszczalny jest wyłącznie wtedy, gdy:",
+                correct: "nie istnieje żadna inna medyczna możliwość uratowania życia lub zdrowia kobiety",
+                options: ["nie istnieje żadna inna medyczna możliwość uratowania życia lub zdrowia kobiety", "pacjentka nie posiada ubezpieczenia w NFZ", "lekarz prowadzący uzyska ustne przyzwolenie ordynatora"],
+                explanations: {
+                    "nie istnieje żadna inna medyczna możliwość...": "Prawidłowo! To wyraz subsydiarności stanu wyższej konieczności — aborcja traktowana jest jako środek ostateczny (ultima ratio).",
+                    "pacjentka nie posiada ubezpieczenia w NFZ": "Błąd! Status ubezpieczenia nie wpływa na legalność przesłanek aborcyjnych.",
+                    "lekarz prowadzący uzyska ustne...": "Błąd! Ustne przyzwolenie nie ma znaczenia prawnego; wymagana jest formalna procedura pisemna."
+                }
+            },
+            {
+                id: 14,
+                question: "Interpretacja zwrotu 'ciąża stanowi' zagrożenie oznacza, że zabieg NIE jest legalny, gdy:",
+                correct: "usuniecie ciąży nie będzie miało żadnego wpływu na stan zdrowia lub życie kobiety",
+                options: ["zagrożenie ma podłoże kardiologiczne", "usuniecie ciąży nie będzie miało żadnego wpływu na stan zdrowia lub życie kobiety", "zagrożenie zostało wykryte przez lekarza psychiatrę"],
+                explanations: {
+                    "zagrożenie ma podłoże kardiologiczne": "Błąd! Choroby serca mogą być bezpośrednią przyczyną zagrożenia życia.",
+                    "usuniecie ciąży nie będzie miało żadnego wpływu na stan zdrowia lub życie kobiety": "Prawidłowo! Jeśli niebezpieczeństwo wynika z innego niezależnego czynnika, na który aborcja nie ma wpływu, przesłanka nie działa.",
+                    "zagrożenie zostało wykryte przez lekarza psychiatrę": "Błąd! Zagrożenie zdrowia psychicznego również mieści się w przesłance zdrowotnej."
+                }
+            },
+            {
+                id: 15,
+                question: "W odniesieniu do zdrowia psychicznego kobiety, stopień obciążenia w trakcie ciąży uznaje się za przesłankę, gdy jego znoszenie można porównać do:",
+                correct: "tortury lub nieludzkiego traktowania",
+                options: ["zwykłego dyskomfortu emocjonalnego", "tortury lub nieludzkiego traktowania", "stresu przedegzaminacyjnego"],
+                explanations: {
+                    "zwykłego dyskomfortu emocjonalnego": "Błąd! Zwykły niepokój nie równoważy wartości życia rozwijającego się płodu.",
+                    "tortury lub nieludzkiego traktowania": "Prawidłowo! Doktrynalna interpretacja z wykładu wskazuje, że poziom obciążenia psychicznego musi osiągać stopień nieludzkiego, niehumanitarnego traktowania.",
+                    "stresu przedegzaminacyjnego": "Błąd! Kompletny brak proporcji aksjologicznej dóbr."
+                }
+            },
+            {
+                id: 16,
+                question: "Okoliczność wskazującą, że ciąża zagraża życiu lub zdrowiu kobiety (przesłanka medyczna), stwierdza:",
+                correct: "inny lekarz niż dokonujący zabiegu",
+                options: ["lekarz, który osobiście przeprowadzi aborcję", "inny lekarz niż dokonujący zabiegu", "wyłącznie prokurator rejonowy"],
+                explanations: {
+                    "lekarz, który osobiście przeprowadzi aborcję": "Błąd! Lekarz wykonujący zabieg nie może sam dla siebie być instancją weryfikującą przesłankę (konflikt interesów).",
+                    "inny lekarz niż dokonujący zabiegu": "Prawidłowo! Ustawa wymaga opinii innego lekarza, co stanowi mechanizm kontroli wewnętrznej.",
+                    "wyłącznie prokurator rejonowy": "Błąd! Prokurator ocenia czyn zabroniony (gwałt), a nie stan zdrowia pacjentki."
+                }
+            },
+            {
+                id: 17,
+                question: "Zasada konieczności stwierdzenia zagrożenia przez INNEGO lekarza nie obowiązuje, gdy:",
+                correct: "ciąża zagraża bezpośrednio życiu kobiety (stan nagły)",
+                options: ["pacjentka złoży oświadczenie przed notariuszem", "ciąża zagraża bezpośrednio życiu kobiety (stan nagły)", "zabieg jest finansowany prywatnie"],
+                explanations: {
+                    "pacjentka złoży oświadczenie...": "Błąd! Oświadczenie notarialne nie znosi rygorów medycznych.",
+                    "ciąża zagraża bezpośrednio życiu kobiety (stan nagły)": "Prawidłowo! W sytuacji bezpośredniego, nagłego zagrożenia życia lekarz działa natychmiast, bez konieczności czekania na formalną opinię drugiego specjalisty.",
+                    "zabieg jest finansowany prywatnie": "Błąd! Przepisy karne i ustawy o planowaniu rodziny obowiązują tak samo w sektorze publicznym, jak i prywatnym."
+                }
+            },
+            {
+                id: 18,
+                question: "Gdzie legalnie można przeprowadzić aborcję z przesłanki medyczno-zdrowotnej?",
+                correct: "wyłącznie w szpitalu",
+                options: ["w każdym prywatnym gabinecie ginekologicznym", "wyłącznie w szpitalu", "w sanatorium lub ambulatorium przychodni POZ"],
+                explanations: {
+                    "w każdym prywatnym gabinecie...": "Błąd! Ustawa wyraźnie ogranicza miejsce wykonywania zabiegu zdrowotnego do warunków szpitalnych.",
+                    "wyłącznie w szpitalu": "Prawidłowo! Zgodnie z ustawą zabieg z tej przesłanki może być przeprowadzony jedynie w szpitalu.",
+                    "w sanatorium lub ambulatorium...": "Błąd! Brak odpowiedniej infrastruktury ratunkowo-szpitalnej."
+                }
+            },
+            {
+                id: 19,
+                question: "Do jakiego momentu dopuszczalny był zabieg z dawnej przesłanki embriopatologicznej (uszkodzenia płodu)?",
+                correct: "do osiągnięcia przez płód zdolności do samodzielnego życia poza organizmem matki",
+                options: ["wyłącznie do 12. tygodnia ciąży", "do osiągnięcia przez płód zdolności do samodzielnego życia poza organizmem matki", "w dowolnym momencie aż do porodu"],
+                explanations: {
+                    "wyłącznie do 12. tygodnia ciąży": "Błąd! Granica 12 tygodni dotyczy przesłanki kryminalnej.",
+                    "do osiągnięcia przez płód zdolności do samodzielnego życia poza organizmem matki": "Prawidłowo! Taka cezura czasowa obowiązywała w ustawie przed zmianami orzeczniczymi.",
+                    "w dowolnym momencie aż do porodu": "Błąd! Po uzyskaniu przez płód zdolności do przeżycia zabieg był niedopuszczalny."
+                }
+            },
+            {
+                id: 20,
+                question: "Zdolność dziecka do samodzielnego życia poza organizmem matki (w ujęciu WHO) przyjmuje się w położnictwie zasadniczo od:",
+                correct: "22. tygodnia życia i wagi minimum 500 g",
+                options: ["12. tygodnia życia i wagi minimum 100 g", "22. tygodnia życia i wagi minimum 500 g", "32. tygodnia życia bez względu na wagę"],
+                explanations: {
+                    "12. tygodnia życia...": "Błąd! Płód w 12. tygodniu nie ma wykształconych narządów umożliwiających funkcje życiowe na zewnątrz.",
+                    "22. tygodnia życia i wagi minimum 500 g": "Prawidłowo! To są oficjalne kryteria graniczne WHO wskazywane w naukach medycznych i przytoczone na wykładzie.",
+                    "32. tygodnia życia...": "Błąd! Płód osiąga zdolność znacznie wcześniej (w granicach 22-24 tygodni)."
+                }
+            },
+            {
+                id: 21,
+                question: "Ocena, czy płód osiągnął zdolność do samodzielnego życia poza organizmem kobiety, musi mieć charakter:",
+                correct: "konkretny i zindywidualizowany",
+                options: ["ogólny i statystyczny", "konkretny i zindywidualizowany", "zależny od decyzji Komisji Etycznej Poltransplantu"],
+                explanations: {
+                    "ogólny i statystyczny": "Błąd! Statystyka nie uwzględnia indywidualnego tempa rozwoju danego płodu.",
+                    "konkretny i zindywidualizowany": "Prawidłowo! Lekarz musi ocenić stan konkretnego, badanego pacjenta (płodu) i jego parametry życiowe.",
+                    "zależny od decyzji Komisji Etycznej...": "Błąd! Poltransplant zajmuje się transplantacjami, a nie położnictwem."
+                }
+            },
+            {
+                id: 22,
+                question: "W przypadku przesłanki zdrowotnej (zagrożenia życia/zdrowia matki) po osiągnięciu przez dziecko zdolności do przeżycia:",
+                correct: "przerywa się proces ciąży, podejmując wszelkie środki ratowania życia dziecka",
+                options: ["nadal dopuszczalne jest uśmiercenie płodu w łonie kobiety", "przerywa się proces ciąży, podejmując wszelkie środki ratowania życia dziecka", "ustawa bezwzględnie zakazuje jakichkolwiek działań medycznych"],
+                explanations: {
+                    "nadal dopuszczalne jest uśmiercenie płodu...": "Błąd! Po uzyskaniu zdolności do życia ochrona dziecka uniemożliwia intencjonalne uśmiercenie.",
+                    "przerywa się proces ciąży, podejmując wszelkie środki ratowania życia dziecka": "Prawidłowo! Wykład wskazuje, że dochodzi wówczas jedynie do przerwania procesu ciąży (np. wcześniejsze cesarskie cięcie) z intencją ratowania obojga.",
+                    "ustawa bezwzględnie zakazuje...": "Błąd! Jeśli zagrożone jest życie matki, działanie medyczne jest konieczne."
+                }
+            },
+            {
+                id: 23,
+                question: "Tzw. przesłanka kryminalna aborcji oznacza uzasadnione podejrzenie, że ciąża powstała w wyniku:",
+                correct: "czynu zabronionego (np. gwałtu)",
+                options: [" błędu lekarskiego w sztuce", "czynu zabronionego (np. gwałtu)", "nielegalnego przekroczenia granicy państwa"],
+                explanations: {
+                    "błędu lekarskiego w sztuce": "Błąd! Błąd medyczny nie stanowi tej przesłanki.",
+                    "czynu zabronionego (np. gwałtu)": "Prawidłowo! Chodzi o czyny naruszające wolność seksualną kobiety (gwałt, kazirodztwo).",
+                    "nielegalnego przekroczenia granicy...": "Błąd! Brak jakiegokolwiek związku z materią wolności seksualnej."
+                }
+            },
+            {
+                id: 24,
+                question: "Wystąpienie okoliczności przesłanki kryminalnej (zaistnienie czynu zabronionego) stwierdza w drodze zaświadczenia:",
+                correct: "prokurator",
+                options: ["lekarz psychiatra", "sędzia sądu rodzinnego", "prokurator"],
+                explanations: {
+                    "lekarz psychiatra": "Błąd! Lekarz nie ma uprawnień do prawno-karnej oceny, czy doszło do przestępstwa.",
+                    "sędzia sądu rodzinnego": "Błąd! Sąd rodzinny decyduje w sprawach opiekuńczych, a nie o ściganiu gwałtów.",
+                    "prokurator": "Prawidłowo! To prokurator jako organ postępowania przygotowawczego wydaje oficjalne dokument potwierdzający zaistnienie podejrzenia przestępstwa."
+                }
+            },
+            {
+                id: 25,
+                question: "Aborcja z przesłanki kryminalnej (gdy ciąża pochodzi z przestępstwa) jest dopuszczalna, jeżeli od początku ciąży nie upłynęło więcej niż:",
+                correct: "12 tygodni",
+                options: ["6 tygodni", "12 tygodni", "24 tygodnie"],
+                explanations: {
+                    "6 tygodni": "Błąd! Zbyt krótki termin, często uniemożliwiający nawet procedury śledcze prokuratury.",
+                    "12 tygodni": "Prawidłowo! Ustawa sztywno ogranicza dopuszczalność z tej przesłanki do końca 12. tygodnia ciąży.",
+                    "24 tygodnie": "Błąd! 24 tygodnie to orientacyjna cezura zdolności płodu do przeżycia, a nie przesłanki kryminalnej."
+                }
+            },
+            {
+                id: 26,
+                question: "Termin 12-tygodniowy dla dopuszczalności aborcji kryminalnej liczony jest zgodnie z medycyną od:",
+                correct: "daty ostatniej miesiączki",
+                options: ["momentu zgłoszenia przestępstwa na policji", "daty ostatniej miesiączki", "dnia owulacji lub domniemanego stosunku"],
+                explanations: {
+                    "momentu zgłoszenia przestępstwa...": "Błąd! Kryterium liczenia jest czysto biologiczno-medyczne, a nie formalno-procesowe.",
+                    "daty ostatniej miesiączki": "Prawidłowo! W położnictwie i ginekologii wiek ciąży (i odpowiednio termin ustawowy) liczy się od pierwszego dnia ostatniej miesiączki.",
+                    "dnia owulacji lub domniemanego stosunku": "Błąd! Metoda ta jest zbyt niedokładna dla celów rygoru terminów prawnych."
+                }
+            },
+            {
+                id: 27,
+                question: "Zabieg przerwania ciąży uzasadniony przesłanką kryminalną (gwałt):",
+                correct: "może być przeprowadzony przez lekarza poza szpitalem",
+                options: ["musi być bezwzględnie przeprowadzony w szpitalu", "może być przeprowadzony przez lekarza poza szpitalem", "może być wykonany samodzielnie przez pielęgniarkę"],
+                explanations: {
+                    "musi być bezwzględnie przeprowadzony...": "Błąd! Ustawa wprost zwalnia ten przypadek z wymogu hospitalizacji (w przeciwieństwie do przesłanki zdrowotnej).",
+                    "może być przeprowadzony przez lekarza poza szpitalem": "Prawidłowo! Ustawa wymaga jedynie, by zabieg wykonał lekarz, nie zawężając miejsca wyłącznie do placówki szpitalnej.",
+                    "może być wykonany samodzielnie przez pielęgniarkę": "Błąd! Aborcja jest zawsze świadczeniem zastrzeżonym wyłącznie dla lekarza."
+                }
+            },
+            {
+                id: 28,
+                question: "Zasada ogólna legalności każdego zabiegu aborcji wymaga od kobiety ciężarnej wyrażenia zgody w formie:",
+                correct: "pisemnej",
+                options: ["ustnej przy dwóch świadkach", "konkludentnej (dorozumianej)", "pisemnej"],
+                explanations: {
+                    "ustnej przy dwóch świadkach": "Błąd! Forma ustna ze świadkami dotyczy sprzeciwu transplantacyjnego ex mortuo, nie aborcji.",
+                    "konkludentnej (dorozumianej)": "Błąd! Czynności medyczne o tak głębokim reżimie prawnym wymagają formy wyraźnej, kwalifikowanej.",
+                    "pisemnej": "Prawidłowo! Art. 4a ust. 4 ustawy kategorycznie uzależnia dopuszczalność od pisemnej zgody kobiety."
+                }
+            },
+            {
+                id: 29,
+                question: "W przypadku kobiety małoletniej (poniżej 18. roku życia) lub całkowicie ubezwłasnowolnionej, zgodę na aborcję wyraża:",
+                correct: "jej przedstawiciel ustawowy (rodzic/opiekun prawny)",
+                options: ["jej przedstawiciel ustawowy (rodzic/opiekun prawny)", "wyłącznie sędzia Trybunału Konstytucyjnego", "Dyrektor placówki opiekuńczej bez wiedzy rodziców"],
+                explanations: {
+                    "jej przedstawiciel ustawowy (rodzic/opiekun prawny)": "Prawidłowo! To podstawowa zasada reprezentacji osób pozbawionych pełnej zdolności do czynności prawnych.",
+                    "wyłącznie sędzia Trybunału...": "Błąd! TK nie pełni funkcji sądów opiekuńczych pierwszej instancji.",
+                    "Dyrektor placówki opiekuńczej...": "Błąd! Uprawnienia spoczywają na przedstawicielu ustawowym lub właściwym sądzie."
+                }
+            },
+            {
+                id: 30,
+                question: "W przypadku pacjentki małoletniej, która ukończyła 13. rok życia, do przeprowadzenia zabiegu wymagana jest:",
+                correct: "pisemna zgoda przedstawiciela ustawowego ORAZ pisemna zgoda małoletniej",
+                options: ["wyłącznie zgoda rodziców, zdanie dziecka się nie liczy", "pisemna zgoda przedstawiciela ustawowego ORAZ pisemna zgoda małoletniej", "wyłącznie pisemna zgoda samej małoletniej"],
+                explanations: {
+                    "wyłącznie zgoda rodziców...": "Błąd! Po ukończeniu 13 lat dziecko zyskuje tzw. zgodę równoległą (kumulatywną).",
+                    "pisemna zgoda przedstawiciela ustawowego ORAZ pisemna zgoda małoletniej": "Prawidłowo! Wymagana jest zgoda obydwu podmiotów (kumulacja oświadczeń woli).",
+                    "wyłącznie pisemna zgoda samej małoletniej": "Błąd! Małoletnia nie ma pełnej zdolności, więc sama jej zgoda jest niewystarczająca."
+                }
+            },
+            {
+                id: 31,
+                question: "Jeżeli małoletnia pacjentka ma MNIEJ niż 13 lat, obok pisemnej zgody rodziców wymagana jest:",
+                correct: "zgoda sądu opiekuńczego, a małoletnia ma prawo do wyrażenia własnej opinii",
+                options: ["kontrasygnata prokuratora generalnego", "zgoda sądu opiekuńczego, a małoletnia ma prawo do wyrażenia własnej opinii", "wyłącznie opinia lekarza pediatry"],
+                explanations: {
+                    "kontrasygnata prokuratora generalnego": "Błąd! Prokurator nie uczestniczy w konstytuowaniu zgody u dzieci poniżej 13 lat.",
+                    "zgoda sądu opiekuńczego, a małoletnia ma prawo do wyrażenia własnej opinii": "Prawidłowo! Ustawa chroni podmiotowość najmłodszych dzieci poprzez obowiązek wysłuchania opinii dziecka przez sąd opiekuńczy.",
+                    "wyłącznie opinia lekarza pediatry": "Błąd! Opinia lekarska to za mało, konieczna jest zgoda władzy sądowniczej."
+                }
+            },
+            {
+                id: 32,
+                question: "W sytuacji, gdy przedstawiciel ustawowy małoletniej odmawia wyrażenia zgody na legalny zabieg, lekarz może go przeprowadzić po uzyskaniu:",
+                correct: "zgody sądu opiekuńczego",
+                options: ["zgody sądu opiekuńczego", "zgody lokalnego rzecznika praw dziecka", "pisemnego upoważnienia od dyrektora szpitala"],
+                explanations: {
+                    "zgody sądu opiekuńczego": "Prawidłowo! Sąd opiekuńczy rozstrzyga spory i zastępuje brakującą zgodę reprezentanta dla ochrony zdrowia dziecka.",
+                    "zgody lokalnego rzecznika...": "Błąd! Rzecznik może interweniować, ale nie wydaje postanowień zastępujących oświadczenia woli.",
+                    "pisemnego upoważnienia...": "Błąd! Dyrektor szpitala nie ma uprawnień do ingerencji w sferę władzy rodzicielskiej."
+                }
+            },
+            {
+                id: 33,
+                question: "W odniesieniu do kobiety ubezwłasnowolnionej całkowicie, jej własna pisemna zgoda jest również wymagana, chyba że:",
+                correct: "na wyrażenie zgody nie pozwala stan jej zdrowia psychicznego",
+                options: ["rodzice złożą oświadczenie przeciwne", "na wyrażenie zgody nie pozwala stan jej zdrowia psychicznego", "ubezwłasnowolnienie nastąpiło z przyczyn finansowych"],
+                explanations: {
+                    "rodzice złożą oświadczenie przeciwne": "Błąd! Sprzeciw rodzica nie niweluje autonomii, jeśli stan psychiczny kobiety pozwala na kontakt.",
+                    "na wyrażenie zgody nie pozwala stan jej zdrowia psychicznego": "Prawidłowo! To jedyny ustawowy wyjątek wyłączający konieczność uzyskania zgody od ubezwłasnowolnionej całkowicie.",
+                    "ubezwłasnowolnienie nastąpiło z przyczyn...": "Błąd! Ubezwłasnowolnienie całkowite zawsze orzeka się z przyczyn zdrowia psychicznego/intelektualnego, a nie czysto ekonomicznych."
+                }
+            },
+            {
+                id: 34,
+                question: "Lekarzem uprawnionym do przeprowadzenia legalnego zabiegu aborcji jest osoba posiadająca:",
+                correct: "specjalizację I stopnia lub tytuł specjalisty w zakresie położnictwa i ginekologii",
+                options: ["dowolną specjalizację zabiegową (np. chirurg ogólny)", "specjalizację I stopnia lub tytuł specjalisty w zakresie położnictwa i ginekologii", "dyplom lekarza medycyny bez specjalizacji (lekarz stażysta)"],
+                explanations: {
+                    "dowolną specjalizację zabiegową...": "Błąd! Ustawa sztywno ogranicza uprawnienia do konkretnej dziedziny medycznej.",
+                    "specjalizację I stopnia lub tytuł specjalisty w zakresie położnictwa i ginekologii": "Prawidłowo! Wynika to bezpośrednio z rozporządzenia Ministra Zdrowia z 1997 roku w sprawie kwalifikacji lekarskich.",
+                    "dyplom lekarza medycyny bez...": "Błąd! Sam dyplom bez specjalizacji kierunkowej ginekologicznej uniemożliwia legalne wykonanie procedury."
+                }
+            },
+            {
+                id: 35,
+                question: "Lekarz odbywający szkolenie specjalizacyjne (rezydent) może dokonać zabiegu przerywania ciąży:",
+                correct: "wyłącznie w obecności i pod kierunkiem lekarza uprawnionego",
+                options: ["całkowicie samodzielnie na nocnym dyżurze", "wyłącznie w obecności i pod kierunkiem lekarza uprawnionego", "nie może dokonać zabiegu w żadnych okolicznościach"],
+                explanations: {
+                    "całkowicie samodzielnie na nocnym dyżurze": "Błąd! Działanie samodzielne rezydenta byłoby złamaniem rozporządzenia o kwalifikacjach.",
+                    "wyłącznie w obecności i pod kierunkiem lekarza uprawnionego": "Prawidłowo! Kształcenie podyplomowe dopuszcza asystę i wykonanie czynu, ale pod ścisłym, osobistym nadzorem specjalisty.",
+                    "nie może dokonać zabiegu w żadnych...": "Błąd! Może, ale w rygorze asysty nadzorowanej."
+                }
+            },
+            {
+                id: 36,
+                question: "Kwalifikacje lekarza stwierdzającego, że ciąża stanowi zagrożenie dla zdrowia matki (przesłanka medyczna), muszą obejmować:",
+                correct: "tytuł specjalisty w dziedzinie medycyny właściwej ze względu na rodzaj choroby kobiety",
+                options: ["tytuł specjalisty w dziedzinie medycyny właściwej ze względu na rodzaj choroby kobiety", "bezwzględnie tytuł profesora nauk ginekologicznych", "wyłączne uprawnienia lekarza medycyny sądowej"],
+                explanations: {
+                    "tylko tytuł specjalisty w dziedzinie medycyny właściwej ze względu na rodzaj choroby kobiety": "Prawidłowo! Jeśli zagrożenie wynika z choroby serca — stwierdza kardiolog; jeśli z nerek — nefrolog; jeśli psychiczne — psychiatra.",
+                    "bezwzględnie tytuł profesora...": "Błąd! Stopień naukowy profesora nie jest wymogiem ustawowym, wystarczy tytuł zawodowy specjalisty.",
+                    "wyłączne uprawnienia lekarza medycyny sądowej": "Błąd! Lekarze medycyny sądowej oceniają zwłoki lub obrażenia dla sądów, nie leczą chorób wewnętrznych u ciężarnych."
+                }
+            },
+            {
+                id: 37,
+                question: "Instytucja prawna pozwalająca personelowi medycznemu na odmowę wykonania świadczenia niezgodnego z jego sumieniem to:",
+                correct: "klauzula sumienia",
+                options: ["kontratyp błędu", "klauzula sumienia", "przywilej bezprawności"],
+                explanations: {
+                    "kontratyp błędu": "Błąd! Pojęcie nieistniejące w teorii prawa.",
+                    "klauzula sumienia": "Prawidłowo! Gwarantuje wolność sumienia lekarza (art. 39 UoZL) i pielęgniarki (art. 12 UoZPiP).",
+                    "przywilej bezprawności": "Błąd! Klauzula to legalne wykonanie prawa do wolności sumienia, nie przywilej bezprawności."
+                }
+            },
+            {
+                id: 38,
+                question: "Podstawowym warunkiem skorzystania przez lekarza z klauzuli sumienia (art. 39 UoZL) jest upewnienie się, że pacjentka:",
+                correct: "nie znajduje się w stanie nagłego zagrożenia życia lub ciężkiego uszkodzenia ciała",
+                options: ["posiada pisemne oświadczenie od spowiednika", "nie znajduje się w stanie nagłego zagrożenia życia lub ciężkiego uszkodzenia ciała", "wyraziła zgodę na komercyjne pokrycie kosztów innego lekarza"],
+                explanations: {
+                    "posiada pisemne oświadczenie...": "Błąd! Aspekty religijno-wyznaniowe nie stanowią ramy formalnej procedury medycznej.",
+                    "nie znajduje się w stanie nagłego zagrożenia życia lub ciężkiego uszkodzenia ciała": "Prawidłowo! W stanach nagłych (art. 30 UoZL) klauzula sumienia jest bezwzględnie wyłączona — lekarz musi ratować życie bez względu na sumienie.",
+                    "wyraziła zgodę na komercyjne...": "Błąd! Finanse nie mają wpływu na dopuszczalność odmowy z przyczyn sumienia."
+                }
+            },
+            {
+                id: 39,
+                question: "Odmowę wykonania świadczenia ze względu na klauzulę sumienia lekarz ma bezwzględny obowiązek zgłosić na piśmie:",
+                correct: "swojemu pracodawcy (przełożonemu)",
+                options: ["bezpośrednio do Ministerstwa Zdrowia", "swojemu pracodawcy (przełożonemu)", "właściwemu prokuratorowi rejonowemu w ciągu 24h"],
+                explanations: {
+                    "bezpośrednio do Ministerstwa Zdrowia": "Błąd! Brak pośrednictwa administracji centralnej w relacji pracowniczej.",
+                    "swojemu pracodawcy (przełożonemu)": "Prawidłowo! Lekarz uprzedza przełożonego/pracodawcę o swojej decyzji i odmowie realizacji określonych świadczeń.",
+                    "właściwemu prokuratorowi rejonowemu...": "Błąd! Skorzystanie z prawa podmiotowego klauzuli sumienia nie jest przestępstwem, nie powiadamia się prokuratury."
+                }
+            },
+            {
+                id: 40,
+                question: "Każdy przypadek skorzystania z klauzuli sumienia i odmowy wykonania aborcji lekarz musi obligatoryjnie:",
+                correct: "odnotować i uzasadnić w dokumentacji medycznej",
+                options: ["zachować w tajemnicy przed pacjentką", "odnotować i uzasadnić w dokumentacji medycznej", "zgłosić do Centralnego Rejestru Sprzeciwów Poltransplantu"],
+                explanations: {
+                    "zachować w tajemnicy...": "Błąd! Pacjentka musi być niezwłocznie poinformowana o odmowie.",
+                    "odnotować i uzasadnić w dokumentacji medycznej": "Prawidłowo! To bezwzględny wymóg formalny weryfikacji legalności odmowy świadczenia.",
+                    "zgłosić do Centralnego Rejestru Sprzeciwów...": "Błąd! Rejestr sprzeciwów dotyczy transplantacji zwłok, kompletny brak zbieżności materii."
+                }
+            },
+            {
+                id: 41,
+                question: "Zgodnie z Kodeksem Cywilnym, dziecko poczęte w momencie porodu pod warunkiem urodzenia żywego zyskuje:",
+                correct: "zdolność prawną wstecznie (nasciturus)",
+                options: ["status pełnej zdolności do czynności prawnych", "zdolność prawną wstecznie (nasciturus)", "zwolnienie z podatku od spadków"],
+                explanations: {
+                    "status pełnej zdolności...": "Błąd! Pełną zdolność do czynności prawnych zyskuje się z pełnoletniością (18 lat).",
+                    "zdolność prawną wstecznie (nasciturus)": "Prawidłowo! Prawo cywilne chroni prawa majątkowe dziecka poczętego (np. prawo do dziedziczenia po zmarłym ojcu) pod warunkiem, że urodzi się żywe.",
+                    "zwolnienie z podatku od spadków": "Błąd! To domena prawa podatkowego, a nie podstawowej podmiotowości cywilnej."
+                }
+            },
+            {
+                id: 42,
+                question: "Skrót KEL odzwierciedla pozaprawne normy deontologiczne personelu medycznego pod nazwą:",
+                correct: "Kodeks Etyki Lekarskiej",
+                options: ["Krajowa Ewidencja Lekarzy", "Kodeks Etyki Lekarskiej", "Komitet Ekspertów Leczniczych"],
+                explanations: {
+                    "Krajowa Ewidencja Lekarzy": "Błąd! Rejestr centralny to Centralny Rejestr Lekarzy (CRL).",
+                    "Kodeks Etyki Lekarskiej": "Prawidłowo! KEL to zbiór zasad etyczno-zawodowych obowiązujących każdego lekarza w relacjach z pacjentem.",
+                    "Komitet Ekspertów Leczniczych": "Błąd! Nazwa fikcyjna."
+                }
+            },
+            {
+                id: 43,
+                question: "Który akt prawny wyznacza granice ochrony życia w fazie prenatalnej w Polsce?",
+                correct: "Ustawa o planowaniu rodziny z 1993 roku",
+                options: ["Międzynarodowy Kodeks Handlowy", "Ustawa o planowaniu rodziny z 1993 roku", "Wyłącznie regulamin wewnętrzny izb lekarskich"],
+                explanations: {
+                    "Międzynarodowy Kodeks Handlowy": "Błąd! Kompletny brak związku merytorycznego.",
+                    "Ustawa o planowaniu rodziny z 1993 roku": "Prawidłowo! To ta ustawa wprost w swoim tytule i treści definiuje warunki dopuszczalności aborcji i granice ochrony płodu.",
+                    "Wyłącznie regulamin wewnętrzny izb...": "Błąd! Izby nie mogą w regulaminach określać granic konstytucyjnych praw i wolności."
+                }
+            },
+            {
+                id: 44,
+                question: "W ujęciu prawnym model 'terminowy' przerywania ciąży oznacza dopuszczalność zabiegu:",
+                correct: "na żądanie kobiety do określonego tygodnia ciąży",
+                options: ["wyłącznie w terminie wyznaczonym przez prokuratora", "na żądanie kobiety do określonego tygodnia ciąży", "tylko w latach parzystych"],
+                explanations: {
+                    "wyłącznie w terminie wyznaczonym...": "Błąd! Prokurator nie wyznacza terminów zabiegów.",
+                    "na żądanie kobiety do określonego tygodnia ciąży": "Prawidłowo! Model terminowy (czasowy) opiera się na autonomii woli kobiety w określonym przedziale czasu (np. do 12. tygodnia), bez badania motywów.",
+                    "tylko w latach parzystych": "Błąd! Absurdalna opcja dystrakcyjna."
+                }
+            },
+            {
+                id: 45,
+                question: "Aborcja przeprowadzana za pomocą podania środków farmakologicznych (tabletek wczesnoporonnych/poronnych):",
+                correct: "podlega tym samym regulacjom i ograniczeniom prawnym co aborcja chirurgiczna",
+                options: ["nie jest w ogóle regulowana przez polskie prawo karne", "podlega tym samym regulacjom i ograniczeniom prawnym co aborcja chirurgiczna", "jest w 100% legalna na żądanie w każdym przypadku"],
+                explanations: {
+                    "nie jest w ogóle regulowana...": "Błąd! Prawo karne i ustawa regulują fakt przerywania ciąży, niezależnie od użytej techniki medycznej.",
+                    "podlega tym samym regulacjom i ograniczeniom prawnym co aborcja chirurgiczna": "Prawidłowo! Wykład wskazuje: 'Brak określenia w ustawie metod (...) niemniej dotyczy zarówno metody farmakologicznej jak i chirurgicznej'. Obie metody muszą spełniać te same kryteria legalności.",
+                    "jest w 100% legalna na żądanie...": "Błąd! Samodzielne, intencjonalne przerwanie własnej ciąży przez kobietę nie jest karane, ale pomocnictwo osób trzecich w aborcji farmakologicznej poza przesłankami jest przestępstwem."
+                }
+            },
+            {
+                id: 46,
+                question: "Wskazanie pilności zabiegu przerwania ciąży ze względu na kryteria medyczne na KLO (Krajowej Liście Oczekujących):",
+                correct: "nie dotyczy aborcji (pomyłka pojęciowa z transplantacją)",
+                options: ["jest weryfikowane przez Poltransplant w ciągu 24h", "nie dotyczy aborcji (pomyłka pojęciowa z transplantacją)", "wymaga kontrasygnaty konsultanta wojewódzkiego"],
+                explanations: {
+                    "jest weryfikowane przez Poltransplant...": "Błąd! Poltransplant zajmuje się przeszczepami narządów, a nie aborcją.",
+                    "nie dotyczy aborcji (pomyłka pojęciowa z transplantacją)": "Prawidłowo! To pytanie pułapka. KLO (Krajowa Lista Oczekujących) i kryteria pilności dotyczą wyłącznie transplantologii, nie procedur przerywania ciąży.",
+                    "wymaga kontrasygnaty...": "Błąd! Całkowite przemieszczenie pojęciowe instytucji prawno-medycznych."
+                }
+            },
+            {
+                id: 47,
+                question: "Czy dozwolone jest w Polsce przerywanie ciąży z przyczyn czysto ekonomicznych lub trudnej sytuacji socjalnej kobiety?",
+                correct: "nie, przesłanka społeczna jest obecnie niedopuszczalna",
+                options: ["tak, pod warunkiem zaświadczenia z MOPS o niskim dochodzie", "nie, przesłanka społeczna jest obecnie niedopuszczalna", "tak, do 20. tygodnia ciąży"],
+                explanations: {
+                    "tak, pod warunkiem zaświadczenia...": "Błąd! Przesłanka społeczna została usunięta z polskiego prawa w latach 90.",
+                    "nie, przesłanka społeczna jest obecnie niedopuszczalna": "Prawidłowo! Ustawa nie przewiduje legalności zabiegu z przyczyn warunków życiowych lub finansowych.",
+                    "tak, do 20. tygodnia...": "Błąd! Przesłanka ta w ogóle nie istnieje w polskim prawie."
+                }
+            },
+            {
+                id: 48,
+                question: "Jeśli kobieta ciężarna żąda obecności osoby bliskiej (np. partnera) przy badaniu ginekologicznym kwalifikującym do zabiegu, lekarz:",
+                correct: "ma obowiązek wyrazić zgodę (prawo pacjenta wynikające z ustawy)",
+                options: ["może ją bezpodstawnie wyprosić powołując się na własną autonomię", "ma obowiązek wyrazić zgodę (prawo pacjenta wynikające z ustawy)", "wymaga uzyskania zgody od kierownika kliniki"],
+                explanations: {
+                    "może ją bezpodstawnie wyprosić...": "Błąd! Pacjent ma ustawowe prawo do obecności osoby bliskiej przy udzielaniu świadczeń zdrowotnych.",
+                    "ma obowiązek wyrazić zgodę (prawo pacjenta wynikające z ustawy)": "Prawidłowo! To powszechne prawo pacjenta, odmowa dopuszczalna jest tylko przy zagrożeniu epidemicznym lub bezpieczeństwa zdrowotnego.",
+                    "wymaga uzyskania zgody od kierownika...": "Błąd! Prawo to przysługuje pacjentowi bezpośrednio z mocy ustawy."
+                }
+            },
+            {
+                id: 49,
+                question: "Ubezwłasnowolnienie całkowite pacjentki (np. pełnoletniej córki) sprawia, że w procesie wyrażania zgody na zabiegi medyczne:",
+                correct: "decyduje jej opiekun prawny ustanowiony przez sąd",
+                options: ["nadal decyduje wyłącznie jej matka na podstawie pokrewieństwa", "decyduje jej opiekun prawny ustanowiony przez sąd", "zdanie pacjentki staje się w 100% nieważne w każdej sytuacji zdrowotnej"],
+                explanations: {
+                    "nadal decyduje wyłącznie jej matka...": "Błąd! Pokrewieństwo automatycznie nie nadaje statusu opiekuna prawnego osobie dorosłej ubezwłasnowolnionej — status ten nadaje sąd.",
+                    "decyduje jej opiekun prawny ustanowiony przez sąd": "Prawidłowo! Status reprezentanta ustawowego dla osoby dorosłej ubezwłasnowolnionej całkowicie zyskuje opiekun prawny wyznaczony postanowieniem sądu.",
+                    "zdanie pacjentki staje się w 100% nieważne...": "Błąd! Ustawa aborcyjna nakazuje uzyskanie zgody ubezwłasnowolnionej, o ile pozwala na to jej stan psychiczny."
+                }
+            },
+            {
+                id: 50,
+                question: "Zgodnie z art. 38 Konstytucji RP, Rzeczpospolita Polska zapewnia każdemu człowiekowi:",
+                correct: "prawną ochronę życia",
+                options: ["prawną ochronę życia", "bezwzględne darmowe leki w ginekologii", "gwarancję dożywotniego zatrudnienia na etacie państwowym"],
+                explanations: {
+                    "prawną ochronę życia": "Prawidłowo! Art. 38 Konstytucji RP stanowi: 'Rzeczpospolita Polska zapewnia każdemu człowiekowi prawną ochronę życia'.",
+                    "bezwzględne darmowe leki...": "Błąd! Kwestie refundacji leków regulują ustawy zwykłe, a nie art. 38 Ustawy Zasadniczej.",
+                    "gwarancję dożywotniego zatrudnienia...": "Błąd! Opcja kompletnie niezwiązana z ochroną życia."
+                }
+            },
+            {
+                id: 51,
+                question: "Zgodnie z art. 39 Konstytucji RP, poddanie człowieka eksperymentom medycznym bez jego dobrowolnie wyrażonej zgody jest:",
+                correct: "zakazane",
+                options: ["legalne w celach naukowych uczelni", "legalne za zgodą ordynatora szpitala", "zakazane"],
+                explanations: {
+                    "legalne w celach naukowych...": "Błąd! Żaden cel naukowy nie sankcjonuje braku dobrowolnej zgody pacjenta.",
+                    "legalne za zgodą ordynatora...": "Błąd! Ordynator nie dysponuje autonomią i wolnością cielesną pacjenta.",
+                    "zakazane": "Prawidłowo! Art. 39 Konstytucji kategorycznie zabrania poddawania kogokolwiek eksperymentom naukowym, w tym medycznym, bez dobrowolnej zgody."
+                }
+            },
+            {
+                id: 52,
+                question: "Koordynacją i spójnością systemową procesu legislacyjnego ustaw zdrowotnych (w tym ustawy aborcyjnej) w Parlamencie zajmuje się:",
+                correct: "Rada Ministrów w ramach inicjatywy lub Sejm i Senat",
+                options: ["Naczelna Izba Pielęgniarek i Położnych samodzielnie", "Rada Ministrów w ramach inicjatywy lub Sejm i Senat", "Wojewódzka Komisja ds. Zdarzeń Medycznych"],
+                explanations: {
+                    "Naczelna Izba Pielęgniarek...": "Błąd! Izby samorządowe opiniują projekty, ale nie posiadają suwerennej władzy ustawodawczej w Parlamencie.",
+                    "Rada Ministrów w ramach inicjatywy lub Sejm i Senat": "Prawidłowo! To organy władzy ustawodawczej i wykonawczej (w ramach inicjatywy rządowej) konstytuują powstawanie aktów prawnych rangi ustawowej.",
+                    "Wojewódzka Komisja ds. Zdarzeń...": "Błąd! Komisja orzeka o odszkodowaniach za błędy medyczne w szpitalach, nie tworzy praw w parlamencie."
+                }
+            }
+        ];
+
+        const userAnswers = {};
+
+        function renderQuiz() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            quizData.forEach((q) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = "bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300";
+                qDiv.id = `q-card-${q.id}`;
+
+                let optionsHTML = '';
+                q.options.forEach(opt => {
+                    optionsHTML += `
+                        <label class="flex items-start gap-3 p-3 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors relative group">
+                            <input type="radio" name="q-${q.id}" value="${opt.replace(/"/g, '&quot;')}" 
+                                   onclick="selectAnswer(${q.id}, this.value)" 
+                                   class="mt-1 h-4 w-4 text-teal-600 border-slate-300 focus:ring-teal-500">
+                            <span class="text-sm font-medium text-slate-700 leading-tight">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                qDiv.innerHTML = `
+                    <div class="p-4 border-b border-slate-100 bg-slate-50/50">
+                        <h3 class="text-sm md:text-base font-bold text-slate-900 leading-snug">${q.id}. ${q.question}</h3>
+                    </div>
+                    <div class="p-4 space-y-2" id="options-container-${q.id}">
+                        ${optionsHTML}
+                    </div>
+                    <div class="hidden px-4 py-3 bg-slate-50 border-t border-slate-100 flex flex-col gap-0.5 text-xs md:text-sm" id="feedback-${q.id}">
+                    </div>
+                `;
+                container.appendChild(qDiv);
+            });
+            updateStats();
+        }
+
+        function selectAnswer(questionId, selectedValue) {
+            userAnswers[questionId] = selectedValue;
+            
+            const question = quizData.find(q => q.id === questionId);
+            const isCorrect = (selectedValue === question.correct);
+
+            const card = document.getElementById(`q-card-${questionId}`);
+            if (isCorrect) {
+                card.className = "bg-white rounded-xl shadow-md border-l-4 border-l-emerald-500 border-slate-200 overflow-hidden transition-all duration-300";
+            } else {
+                card.className = "bg-white rounded-xl shadow-md border-l-4 border-l-rose-500 border-slate-200 overflow-hidden transition-all duration-300";
+            }
+
+            const feedbackArea = document.getElementById(`feedback-${questionId}`);
+            feedbackArea.className = `px-4 py-3 border-t border-slate-100 flex flex-col text-xs md:text-sm ${isCorrect ? 'bg-emerald-50 text-emerald-800' : 'bg-rose-50 text-rose-800'}`;
+            
+            const statusText = isCorrect 
+                ? `<span class="font-bold">✓ Prawidłowo!</span>` 
+                : `<span class="font-bold">✗ Błąd merytoryczny. Poprawna odpowiedź: <u>${question.correct}</u></span>`;
+            
+            const explanationText = `<p class="mt-1 text-slate-600 italic bg-white/80 p-2 rounded border border-slate-200/50">${question.explanations[selectedValue]}</p>`;
+            
+            feedbackArea.innerHTML = statusText + explanationText;
+            feedbackArea.style.display = 'flex';
+
+            updateStats();
+        }
+
+        function updateStats() {
+            const answeredCount = Object.keys(userAnswers).length;
+            let correctCount = 0;
+
+            quizData.forEach(q => {
+                if (userAnswers[q.id] === q.correct) {
+                    correctCount++;
+                }
+            });
+
+            document.getElementById('stats-counter').innerText = `Rozwiązano: ${answeredCount} z ${quizData.length} pytań`;
+            document.getElementById('score-display').innerText = `${correctCount} / ${quizData.length}`;
+            
+            const percentage = Math.round((answeredCount / quizData.length) * 100) || 0;
+            const scorePercentage = Math.round((correctCount / quizData.length) * 100) || 0;
+            document.getElementById('percent-display').innerText = `Postęp: ${percentage}% (Wynik: ${scorePercentage}%)`;
+        }
+
+        function showAllCorrectAnswers() {
+            quizData.forEach(q => {
+                const feedbackArea = document.getElementById(`feedback-${q.id}`);
+                feedbackArea.className = "px-4 py-2 border-t border-slate-100 flex flex-col text-xs bg-emerald-50 text-emerald-800";
+                feedbackArea.innerHTML = `<span class="font-bold">Poprawna odpowiedź: <u>${q.correct}</u></span>`;
+                feedbackArea.style.display = 'flex';
+                
+                const card = document.getElementById(`q-card-${q.id}`);
+                card.className = "bg-white rounded-xl shadow-md border-l-4 border-l-emerald-500 border-slate-200 overflow-hidden transition-all duration-300";
+            });
+        }
+
+        function resetTest() {
+            for (let key in userAnswers) {
+                delete userAnswers[key];
+            }
+            renderQuiz();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.onload = function() {
+            renderQuiz();
+        };
+    </script>
+</body>
+</html>
